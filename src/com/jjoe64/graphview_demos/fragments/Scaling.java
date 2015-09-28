@@ -25,15 +25,16 @@
  */
 package com.jjoe64.graphview_demos.fragments;
 
-import android.annotation.SuppressLint;
+import java.util.Random;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer.GridStyle;
@@ -49,6 +50,9 @@ import com.jjoe64.graphview_demos.R;
  * Created by jonas on 03.11.14.
  */
 public class Scaling extends Fragment {
+	private LineGraphSeries<DataPoint> mSeries;
+	private int mSize = 100;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -59,12 +63,11 @@ public class Scaling extends Fragment {
 
 		DataPoint[] points = new DataPoint[100];
 		for (int i = 0; i < points.length; i++) {
-			points[i] = new DataPoint(i, -(Math.random() * 100 + 1));
+			points[i] = new DataPoint(i, new Random().nextInt(400) - 200);
 		}
-		LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(
-				points);
-		series.setThickness(1f);
-		series.setOnDataPointTapListener(new OnDataPointTapListener() {
+		mSeries = new LineGraphSeries<DataPoint>(points);
+		mSeries.setThickness(1f);
+		mSeries.setOnDataPointTapListener(new OnDataPointTapListener() {
 
 			@Override
 			public void onTap(Series series, DataPointInterface dataPoint) {
@@ -72,25 +75,40 @@ public class Scaling extends Fragment {
 			}
 		});
 
-		graph.addSeries(series);
+		graph.addSeries(mSeries);
 		// set manual X bounds
 		graph.getViewport().setYAxisBoundsManual(true);
 		graph.getViewport().setMinY(-200);
 		graph.getViewport().setMaxY(200);
 
 		graph.getViewport().setXAxisBoundsManual(true);
-		graph.getViewport().setMinX(4);
-		graph.getViewport().setMaxX(8);
-
+		graph.getViewport().setMinX(10);
+		graph.getViewport().setMaxX(20);
+		
 		// enable scaling
-		graph.getViewport().setScalable(true);
-		graph.getGridLabelRenderer().setGridStyle(GridStyle.BOTH); // 网格 垂直，水平、无
+		graph.getViewport().setScalable(false); //放大缩小
+		graph.getViewport().setScrollable(true); //横向滑动
+		graph.getGridLabelRenderer().setGridStyle(GridStyle.HORIZONTAL); // 网格
+																			// 垂直，水平、无
 		graph.getGridLabelRenderer().setHighlightZeroLines(false); // 中心线是否加粗
 		graph.getGridLabelRenderer().setVerticalLabelsVisible(true); // y轴 刻度
 		graph.getGridLabelRenderer().setHorizontalLabelsVisible(true);
 		// graph.getGridLabelRenderer().setNumVerticalLabels(3); //X轴 条数
 		graph.getGridLabelRenderer().setTextSize(10);
 		graph.getGridLabelRenderer().setLabelsSpace(1);
+
+		rootView.findViewById(R.id.button1).setOnClickListener(
+				new OnClickListener() {
+
+					@Override
+					public void onClick(View arg0) {
+						mSize = mSize + 1;
+						mSeries.appendData(
+								new DataPoint(mSize,
+										new Random().nextInt(400) - 200), true,
+								100);
+					}
+				});
 
 		return rootView;
 	}
