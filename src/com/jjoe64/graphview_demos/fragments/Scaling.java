@@ -84,10 +84,10 @@ public class Scaling extends Fragment {
 		graph.getViewport().setXAxisBoundsManual(true);
 		graph.getViewport().setMinX(10);
 		graph.getViewport().setMaxX(20);
-		
+
 		// enable scaling
-		graph.getViewport().setScalable(false); //放大缩小
-		graph.getViewport().setScrollable(true); //横向滑动
+		graph.getViewport().setScalable(false); // 放大缩小
+		graph.getViewport().setScrollable(true); // 横向滑动
 		graph.getGridLabelRenderer().setGridStyle(GridStyle.HORIZONTAL); // 网格
 																			// 垂直，水平、无
 		graph.getGridLabelRenderer().setHighlightZeroLines(false); // 中心线是否加粗
@@ -102,6 +102,14 @@ public class Scaling extends Fragment {
 
 					@Override
 					public void onClick(View arg0) {
+						/**
+						 * 增加新数据 void
+						 * com.jjoe64.graphview.series.BaseSeries.appendData
+						 * (DataPoint dataPoint, boolean scrollToEnd, int
+						 * maxDataPoints)
+						 * scrollToEnd : 是否自动滚动到最后
+						 * maxDataPoints : 最多展示多少个点
+						 */
 						mSize = mSize + 1;
 						mSeries.appendData(
 								new DataPoint(mSize,
