@@ -30,7 +30,6 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -416,7 +415,6 @@ public class GraphView extends View {
 	public boolean onTouchEvent(MotionEvent event) {
 		boolean b = mViewport.onTouchEvent(event);
 		boolean a = super.onTouchEvent(event);
-
 		// is it a click?
 		if (mTapDetector.onTouchEvent(event)) {
 			for (Series s : mSeries) {
@@ -438,7 +436,7 @@ public class GraphView extends View {
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		mViewport.computeScroll();
+//		mViewport.computeScroll();
 	}
 
 	/**

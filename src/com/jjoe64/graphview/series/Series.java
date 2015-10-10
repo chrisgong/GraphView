@@ -109,7 +109,7 @@ public interface Series<E extends DataPointInterface> {
      * @param x pixel
      * @param y pixel
      */
-    void onTap(float x, float y);
+    void onTap(double x, double y);
 
     /**
      * called when the series was added to a graph

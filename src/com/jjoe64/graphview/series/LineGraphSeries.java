@@ -66,7 +66,7 @@ public class LineGraphSeries<E extends DataPointInterface> extends
 		 * 
 		 * @see #drawDataPoints
 		 */
-		private float dataPointsRadius = 10f;
+		private double dataPointsRadius = 10f;
 
 		/**
 		 * the background color for the filling under the line.
@@ -194,15 +194,15 @@ public class LineGraphSeries<E extends DataPointInterface> extends
 		double diffY = maxY - minY;
 		double diffX = maxX - minX;
 
-		float graphHeight = graphView.getGraphContentHeight();
-		float graphWidth = graphView.getGraphContentWidth();
-		float graphLeft = graphView.getGraphContentLeft();
-		float graphTop = graphView.getGraphContentTop();
+		double graphHeight = graphView.getGraphContentHeight();
+		double graphWidth = graphView.getGraphContentWidth();
+		double graphLeft = graphView.getGraphContentLeft();
+		double graphTop = graphView.getGraphContentTop();
 
 		lastEndY = 0;
 		lastEndX = 0;
 		double lastUsedEndX = 0;
-		float firstX = 0;
+		double firstX = 0;
 		int i = 0;
 		while (values.hasNext()) {
 			E value = values.next();
@@ -251,37 +251,37 @@ public class LineGraphSeries<E extends DataPointInterface> extends
 					lastEndY = graphHeight;
 				}
 
-				float startX = (float) lastEndX + (graphLeft + 1);
-				float startY = (float) (graphTop - lastEndY) + graphHeight;
-				float endX = (float) x + (graphLeft + 1);
-				float endY = (float) (graphTop - y) + graphHeight;
+				double startX = lastEndX + (graphLeft + 1);
+				double startY = (graphTop - lastEndY) + graphHeight;
+				double endX = x + (graphLeft + 1);
+				double endY = (graphTop - y) + graphHeight;
 
 				// draw data point
 				if (mStyles.drawDataPoints) {
 					// fix: last value was not drawn. Draw here now the end
 					// values
-					canvas.drawCircle(endX, endY, mStyles.dataPointsRadius,
-							paint);
+					canvas.drawCircle((float) endX, (float) endY,
+							(float) mStyles.dataPointsRadius, paint);
 				}
 				registerDataPoint(endX, endY, value);
 
 				mPath.reset();
-				mPath.moveTo(startX, startY);
-				mPath.lineTo(endX, endY);
+				mPath.moveTo((float) startX, (float) startY);
+				mPath.lineTo((float) endX, (float) endY);
 				canvas.drawPath(mPath, paint);
 				if (mStyles.drawBackground) {
 					if (i == 1) {
 						firstX = startX;
-						mPathBackground.moveTo(startX, startY);
+						mPathBackground.moveTo((float) startX, (float) startY);
 					}
-					mPathBackground.lineTo(endX, endY);
+					mPathBackground.lineTo((float) endX, (float) endY);
 				}
 				lastUsedEndX = endX;
 			} else if (mStyles.drawDataPoints) {
 				// fix: last value not drawn as datapoint. Draw first point
 				// here, and then on every step the end values (above)
-				float first_X = (float) x + (graphLeft + 1);
-				float first_Y = (float) (graphTop - y) + graphHeight;
+				double first_X = x + (graphLeft + 1);
+				double first_Y = (graphTop - y) + graphHeight;
 				// TODO canvas.drawCircle(first_X, first_Y, dataPointsRadius,
 				// mPaint);
 			}
@@ -292,9 +292,10 @@ public class LineGraphSeries<E extends DataPointInterface> extends
 
 		if (mStyles.drawBackground) {
 			// end / close path
-			mPathBackground
-					.lineTo((float) lastUsedEndX, graphHeight + graphTop);
-			mPathBackground.lineTo(firstX, graphHeight + graphTop);
+			mPathBackground.lineTo((float) lastUsedEndX, (float) graphHeight
+					+ (float) graphTop);
+			mPathBackground.lineTo((float) firstX, (float) graphHeight
+					+ (float) graphTop);
 			mPathBackground.close();
 			canvas.drawPath(mPathBackground, mPaintBackground);
 		}
@@ -370,7 +371,7 @@ public class LineGraphSeries<E extends DataPointInterface> extends
 	 * @return the radius for the data points.
 	 * @see #setDrawDataPoints(boolean)
 	 */
-	public float getDataPointsRadius() {
+	public double getDataPointsRadius() {
 		return mStyles.dataPointsRadius;
 	}
 
@@ -379,7 +380,7 @@ public class LineGraphSeries<E extends DataPointInterface> extends
 	 *            the radius for the data points.
 	 * @see #setDrawDataPoints(boolean)
 	 */
-	public void setDataPointsRadius(float dataPointsRadius) {
+	public void setDataPointsRadius(double dataPointsRadius) {
 		mStyles.dataPointsRadius = dataPointsRadius;
 	}
 
@@ -412,7 +413,7 @@ public class LineGraphSeries<E extends DataPointInterface> extends
 	}
 
 	@Override
-	public void onTap(float x, float y) {
+	public void onTap(double x, double y) {
 		super.onTap(x, y);
 	}
 }

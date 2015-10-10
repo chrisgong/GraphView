@@ -289,7 +289,7 @@ public abstract class BaseSeries<E extends DataPointInterface> implements
 	 *            pixel
 	 */
 	@Override
-	public void onTap(float x, float y) {
+	public void onTap(double x, double y) {
 		if (mOnDataPointTapListener != null) {
 			E p = findDataPoint(x, y);
 			if (p != null) {
@@ -307,16 +307,16 @@ public abstract class BaseSeries<E extends DataPointInterface> implements
 	 *            pixel
 	 * @return the data point or null if nothing was found
 	 */
-	protected E findDataPoint(float x, float y) {
-		float shortestDistance = Float.NaN;
+	protected E findDataPoint(double x, double y) {
+		double shortestDistance = Double.NaN;
 		E shortest = null;
 		for (Map.Entry<PointF, E> entry : mDataPoints.entrySet()) {
-			float x1 = entry.getKey().x;
-			float y1 = entry.getKey().y;
-			float x2 = x;
-			float y2 = y;
+			double x1 = entry.getKey().x;
+			double y1 = entry.getKey().y;
+			double x2 = x;
+			double y2 = y;
 
-			float distance = (float) Math.sqrt((x1 - x2) * (x1 - x2)
+			double distance = Math.sqrt((x1 - x2) * (x1 - x2)
 					+ (y1 - y2) * (y1 - y2));
 			if (shortest == null || distance < shortestDistance) {
 				shortestDistance = distance;
@@ -341,8 +341,8 @@ public abstract class BaseSeries<E extends DataPointInterface> implements
 	 * @param dp
 	 *            the data point to save
 	 */
-	protected void registerDataPoint(float x, float y, E dp) {
-		mDataPoints.put(new PointF(x, y), dp);
+	protected void registerDataPoint(double x, double y, E dp) {
+		mDataPoints.put(new PointF((float)x, (float)y), dp);
 	}
 
 	/**

@@ -64,35 +64,34 @@ public class Viewport {
 		 */
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			float viewportWidth = mCurrentViewport.width();
-			float center = mCurrentViewport.left + viewportWidth / 2;
+			double viewportWidth = mCurrentViewport.width();
+			double center = mCurrentViewport.left + viewportWidth / 2;
 			viewportWidth /= detector.getScaleFactor();
-			mCurrentViewport.left = center - viewportWidth / 2;
-			mCurrentViewport.right = mCurrentViewport.left + viewportWidth;
+			mCurrentViewport.left = (float) (center - viewportWidth / 2);
+			mCurrentViewport.right = (float) (mCurrentViewport.left + viewportWidth);
 
 			// viewportStart must not be < minX
-			float minX = (float) getMinX(true);
+			double minX = getMinX(true);
 			if (mCurrentViewport.left < minX) {
-				mCurrentViewport.left = minX;
-				mCurrentViewport.right = mCurrentViewport.left + viewportWidth;
+				mCurrentViewport.left = (float) minX;
+				mCurrentViewport.right = (float) (mCurrentViewport.left + viewportWidth);
 			}
 
 			// viewportStart + viewportSize must not be > maxX
-			float maxX = (float) getMaxX(true);
+			double maxX = getMaxX(true);
 			if (viewportWidth == 0) {
-				mCurrentViewport.right = maxX;
+				mCurrentViewport.right = (float) maxX;
 			}
 			double overlap = mCurrentViewport.left + viewportWidth - maxX;
 			if (overlap > 0) {
 				// scroll left
 				if (mCurrentViewport.left - overlap > minX) {
 					mCurrentViewport.left -= overlap;
-					mCurrentViewport.right = mCurrentViewport.left
-							+ viewportWidth;
+					mCurrentViewport.right = (float) (mCurrentViewport.left + viewportWidth);
 				} else {
 					// maximal scale
-					mCurrentViewport.left = minX;
-					mCurrentViewport.right = maxX;
+					mCurrentViewport.left = (float) minX;
+					mCurrentViewport.right = (float) maxX;
 				}
 			}
 
@@ -169,7 +168,7 @@ public class Viewport {
 			if (!mIsScrollable || mScalingActive)
 				return false;
 
-			if (Float.isNaN(mScrollingReferenceX)) {
+			if (Double.isNaN(mScrollingReferenceX)) {
 				mScrollingReferenceX = mCurrentViewport.left;
 			}
 
@@ -183,78 +182,80 @@ public class Viewport {
 			 * about the viewport, see the comments for {@link mCurrentViewport}
 			 * .
 			 */
-			float viewportOffsetX = distanceX * mCurrentViewport.width()
-					/ mGraphView.getGraphContentWidth();
-			float viewportOffsetY = -distanceY * mCurrentViewport.height()
+
+			double viewportOffsetX = (double) distanceX
+					* (double) mCurrentViewport.width()
+					/ (double) mGraphView.getGraphContentWidth();
+			double viewportOffsetY = -distanceY * mCurrentViewport.height()
 					/ mGraphView.getGraphContentHeight();
 
-			int completeWidth = (int) ((mCompleteRange.width() / mCurrentViewport
-					.width()) * (float) mGraphView.getGraphContentWidth());
-			int completeHeight = (int) ((mCompleteRange.height() / mCurrentViewport
+			double completeWidth = ((double) (mCompleteRange.width() / (double) mCurrentViewport
+					.width()) * mGraphView.getGraphContentWidth());
+			double completeHeight = ((mCompleteRange.height() / mCurrentViewport
 					.height()) * (float) mGraphView.getGraphContentHeight());
 
-			int scrolledX = (int) (completeWidth
-					* (mCurrentViewport.left + viewportOffsetX - mCompleteRange.left) / mCompleteRange
+			double scrolledX = (completeWidth
+					* ((double) mCurrentViewport.left + viewportOffsetX - (double) mCompleteRange.left) / (double) mCompleteRange
 					.width());
-			int scrolledY = (int) (completeHeight
+			double scrolledY = (completeHeight
 					* (mCompleteRange.bottom - mCurrentViewport.bottom - viewportOffsetY) / mCompleteRange
 					.height());
 			boolean canScrollX = mCurrentViewport.left > mCompleteRange.left
 					|| mCurrentViewport.right < mCompleteRange.right;
 			boolean canScrollY = mCurrentViewport.bottom > mCompleteRange.bottom
 					|| mCurrentViewport.top < mCompleteRange.top;
-
 			if (canScrollX) {
 				if (viewportOffsetX < 0) {
-					float tooMuch = mCurrentViewport.left + viewportOffsetX
+					double tooMuch = mCurrentViewport.left + viewportOffsetX
 							- mCompleteRange.left;
 					if (tooMuch < 0) {
 						viewportOffsetX -= tooMuch;
 					}
 				} else {
-					float tooMuch = mCurrentViewport.right + viewportOffsetX
+					double tooMuch = mCurrentViewport.right + viewportOffsetX
 							- mCompleteRange.right;
 					if (tooMuch > 0) {
 						viewportOffsetX -= tooMuch;
 					}
 				}
+
 				mCurrentViewport.left += viewportOffsetX;
 				mCurrentViewport.right += viewportOffsetX;
 			}
+
+			/**
+			 * 实际控制滚动部分代码
+			 */
+			if (canScrollX && scrolledX < 0) {
+				mEdgeEffectLeft.onPull((float) (scrolledX / (float) mGraphView
+						.getGraphContentWidth()));
+				mEdgeEffectLeftActive = true;
+			}
+
+			if (canScrollX
+					&& scrolledX > completeWidth
+							- mGraphView.getGraphContentWidth()) {
+				mEdgeEffectRight
+						.onPull((float) ((scrolledX - completeWidth + mGraphView
+								.getGraphContentWidth()) / (float) mGraphView
+								.getGraphContentWidth()));
+				mEdgeEffectRightActive = true;
+			}
+
 			if (canScrollY) {
 				// mCurrentViewport.top += viewportOffsetX;
 				// mCurrentViewport.bottom -= viewportOffsetX;
 			}
 
-			if (canScrollX && scrolledX < 0) {
-				mEdgeEffectLeft.onPull(scrolledX
-						/ (float) mGraphView.getGraphContentWidth());
-				mEdgeEffectLeftActive = true;
-			}
 			if (canScrollY && scrolledY < 0) {
-				mEdgeEffectBottom.onPull(scrolledY
-						/ (float) mGraphView.getGraphContentHeight());
+				mEdgeEffectBottom
+						.onPull((float) (scrolledY / (float) mGraphView
+								.getGraphContentHeight()));
 				mEdgeEffectBottomActive = true;
 			}
-			if (canScrollX
-					&& scrolledX > completeWidth
-							- mGraphView.getGraphContentWidth()) {
-				mEdgeEffectRight.onPull((scrolledX - completeWidth + mGraphView
-						.getGraphContentWidth())
-						/ (float) mGraphView.getGraphContentWidth());
-				mEdgeEffectRightActive = true;
-			}
-			// if (canScrollY && scrolledY > mSurfaceSizeBuffer.y -
-			// mContentRect.height()) {
-			// mEdgeEffectTop.onPull((scrolledY - mSurfaceSizeBuffer.y +
-			// mContentRect.height())
-			// / (float) mContentRect.height());
-			// mEdgeEffectTopActive = true;
-			// }
 
-			// adjust viewport, labels, etc.
+			// // adjust viewport, labels, etc.
 			mGraphView.onDataChanged(true, false);
-
 			ViewCompat.postInvalidateOnAnimation(mGraphView);
 			return true;
 		}
@@ -405,7 +406,7 @@ public class Viewport {
 	/**
 	 * stores the viewport left value at the time of beginning of the scrolling
 	 */
-	protected float mScrollingReferenceX = Float.NaN;
+	protected double mScrollingReferenceX = Double.NaN;
 
 	/**
 	 * state of the x axis
@@ -539,6 +540,7 @@ public class Viewport {
 			mCompleteRange.left = (float) d;
 
 			d = series.get(0).getHighestValueX();
+
 			for (Series s : series) {
 				if (!s.isEmpty() && d < s.getHighestValueX()) {
 					d = s.getHighestValueX();
@@ -767,13 +769,13 @@ public class Viewport {
 			// operation is
 			// currently active.
 
-			int completeWidth = (int) ((mCompleteRange.width() / mCurrentViewport
+			float completeWidth = ((mCompleteRange.width() / mCurrentViewport
 					.width()) * (float) mGraphView.getGraphContentWidth());
-			int completeHeight = (int) ((mCompleteRange.height() / mCurrentViewport
+			float completeHeight = ((mCompleteRange.height() / mCurrentViewport
 					.height()) * (float) mGraphView.getGraphContentHeight());
 
-			int currX = mScroller.getCurrX();
-			int currY = mScroller.getCurrY();
+			float currX = mScroller.getCurrX();
+			float currY = mScroller.getCurrY();
 
 			boolean canScrollX = mCurrentViewport.left > mCompleteRange.left
 					|| mCurrentViewport.right < mCompleteRange.right;

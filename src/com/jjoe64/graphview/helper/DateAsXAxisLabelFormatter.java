@@ -19,13 +19,12 @@
  */
 package com.jjoe64.graphview.helper;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+
 import android.content.Context;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
-
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Helper class to use date objects as x-values. This will use your own Date
@@ -88,8 +87,20 @@ public class DateAsXAxisLabelFormatter extends DefaultLabelFormatter {
 		if (isValueX) {
 			// format as date
 			mCalendar.setTimeInMillis((long) value);
-			return mCalendar.get(Calendar.HOUR_OF_DAY) + ":"
-					+ mCalendar.get(Calendar.MINUTE);
+			int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
+			int min = mCalendar.get(Calendar.MINUTE);
+			String hour_s = "", min_s = "";
+			if (hour < 10) {
+				hour_s = "0" + hour;
+			} else {
+				hour_s = "" + hour;
+			}
+			if (min < 10) {
+				min_s = "0" + min;
+			} else {
+				min_s = "" + min;
+			}
+			return hour_s + ":" + min_s;
 		} else {
 			return super.formatLabel(value, isValueX);
 		}

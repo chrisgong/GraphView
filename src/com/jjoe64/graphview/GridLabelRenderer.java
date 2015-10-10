@@ -29,6 +29,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
+import android.util.Log;
 import android.util.TypedValue;
 
 /**
@@ -594,7 +595,6 @@ public class GridLabelRenderer {
 		double newMinX;
 		double exactSteps;
 
-		float scalingOffset = 0f;
 		if (mGraphView.getViewport().isXAxisBoundsManual()
 				&& mGraphView.getViewport().getXAxisBoundsStatus() != Viewport.AxisBoundsStatus.READJUST_AFTER_SCALE) {
 			// scaling
@@ -678,17 +678,17 @@ public class GridLabelRenderer {
 		}
 		int width = mGraphView.getGraphContentWidth();
 
-		float scrolled = 0;
-		float scrolledPixels = 0;
+		double scrolled = 0;
+		double scrolledPixels = 0;
 
 		double v = newMinX;
-		int p = mGraphView.getGraphContentLeft(); // start
-		float pixelStep = width / (numHorizontalLabels - 1);
+		double p = mGraphView.getGraphContentLeft(); // start
+		double pixelStep = width / (numHorizontalLabels - 1);
 
 		if (mGraphView.getViewport().mScalingActive) {
-			float oldStep = mGraphView.getViewport().mScalingBeginWidth
+			double oldStep = mGraphView.getViewport().mScalingBeginWidth
 					/ (numHorizontalLabels - 1);
-			float factor = (mGraphView.getViewport().mCurrentViewport.width() + oldStep)
+			double factor = (mGraphView.getViewport().mCurrentViewport.width() + oldStep)
 					/ (mGraphView.getViewport().mScalingBeginWidth + oldStep);
 			pixelStep *= 1f / factor;
 
@@ -698,16 +698,15 @@ public class GridLabelRenderer {
 
 			// scrolled = ((float) mGraphView.getViewport().getMinX(false) -
 			// mGraphView.getViewport().mScalingBeginLeft)*2;
-			float newWidth = width * 1f / factor;
+			double newWidth = width * 1f / factor;
 			scrolledPixels = (newWidth - width) * -0.5f;
 
 		}
 
 		// scrolling
-		if (!Float.isNaN(mGraphView.getViewport().mScrollingReferenceX)) {
-			scrolled = mGraphView.getViewport().mScrollingReferenceX
-					- (float) newMinX;
-			scrolledPixels += scrolled * (pixelStep / (float) exactSteps);
+		if (!Double.isNaN(mGraphView.getViewport().mScrollingReferenceX)) {
+			scrolled = mGraphView.getViewport().mScrollingReferenceX - newMinX;
+			scrolledPixels += scrolled * (pixelStep / exactSteps);
 
 			if (scrolled < 0 - exactSteps) {
 				mGraphView.getViewport().mScrollingReferenceX += exactSteps;
@@ -721,7 +720,7 @@ public class GridLabelRenderer {
 		for (int i = 0; i < numHorizontalLabels; i++) {
 			// don't draw steps before 0 (scrolling)
 			if (p >= mGraphView.getGraphContentLeft()) {
-				mStepsHorizontal.put(p, v);
+				mStepsHorizontal.put((int) p, v);
 			}
 			p += pixelStep;
 			v += exactSteps;

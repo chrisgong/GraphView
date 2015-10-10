@@ -25,6 +25,8 @@
  */
 package com.jjoe64.graphview_demos.fragments;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 import android.app.Activity;
@@ -38,7 +40,9 @@ import android.view.ViewGroup;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer.GridStyle;
+import com.jjoe64.graphview.Viewport.AxisBoundsStatus;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -62,9 +66,14 @@ public class Scaling extends Fragment {
 
 		GraphView graph = (GraphView) rootView.findViewById(R.id.graph);
 
+		// Calendar calendar = Calendar.getInstance();
+		// calendar.add(Calendar.MINUTE, -100);
 		DataPoint[] points = new DataPoint[100];
 		for (int i = 0; i < points.length; i++) {
+			// points[i] = new DataPoint(calendar.getTime(),
+			// new Random().nextInt(400) - 200);
 			points[i] = new DataPoint(i, new Random().nextInt(400) - 200);
+			// calendar.add(Calendar.MINUTE, 1);
 		}
 		mSeries = new LineGraphSeries<DataPoint>(points);
 		mSeries.setThickness(1f);
@@ -77,30 +86,42 @@ public class Scaling extends Fragment {
 		});
 
 		graph.addSeries(mSeries);
-		
 
-		graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
+		// graph.getGridLabelRenderer().setLabelFormatter(
+		// new DateAsXAxisLabelFormatter(getActivity()));
+
+		String[] strs = new String[10];
+		for (int i = 0; i < 10; i++) {
+			strs[i] = i + "" + i + "" + i + "" + i;
+		}
+		StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(
+				graph);
+		staticLabelsFormatter.setHorizontalLabels(strs);
+		graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+
 		// set manual X bounds
 		graph.getViewport().setYAxisBoundsManual(true);
 		graph.getViewport().setMinY(-200);
 		graph.getViewport().setMaxY(200);
 
 		graph.getViewport().setXAxisBoundsManual(true);
-		graph.getViewport().setMinX(10);
-		graph.getViewport().setMaxX(20);
+		graph.getViewport().setXAxisBoundsStatus(AxisBoundsStatus.FIX);
+		graph.getViewport().setMinX(points[0].getX());
+		graph.getViewport().setMaxX(points[9].getX());
+		Log.e("cim", points[0].getX() + "-" + points[9].getX());
 
 		// enable scaling
 		graph.getViewport().setScalable(false); // 放大缩小
 		graph.getViewport().setScrollable(true); // 横向滑动
-		graph.getGridLabelRenderer().setGridStyle(GridStyle.BOTH); // 网格
-																			// 垂直，水平、无
+		graph.getGridLabelRenderer().setGridStyle(GridStyle.HORIZONTAL); // 网格
+		// 垂直，水平、无
 		graph.getGridLabelRenderer().setHighlightZeroLines(false); // 中心线是否加粗
 		graph.getGridLabelRenderer().setVerticalLabelsVisible(true); // y轴 刻度
 		graph.getGridLabelRenderer().setHorizontalLabelsVisible(true);
-		// graph.getGridLabelRenderer().setNumVerticalLabels(3); //X轴 条数
+		graph.getGridLabelRenderer().setNumVerticalLabels(10); // X轴 条数
 		graph.getGridLabelRenderer().setTextSize(10);
-		graph.getGridLabelRenderer().setLabelsSpace(1);
 		graph.getGridLabelRenderer().setLabelsSpace(5);
+		// graph.getViewport().scrollToEnd();
 
 		rootView.findViewById(R.id.button1).setOnClickListener(
 				new OnClickListener() {
@@ -111,9 +132,8 @@ public class Scaling extends Fragment {
 						 * 增加新数据 void
 						 * com.jjoe64.graphview.series.BaseSeries.appendData
 						 * (DataPoint dataPoint, boolean scrollToEnd, int
-						 * maxDataPoints)
-						 * scrollToEnd : 是否自动滚动到最后
-						 * maxDataPoints : 最多展示多少个点
+						 * maxDataPoints) scrollToEnd : 是否自动滚动到最后 maxDataPoints
+						 * : 最多展示多少个点
 						 */
 						mSize = mSize + 1;
 						mSeries.appendData(
