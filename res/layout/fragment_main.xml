@@ -7,7 +7,7 @@
     <com.jjoe64.graphview.GraphView
         android:id="@+id/graph"
         android:layout_width="match_parent"
-        android:layout_height="100dip"
+        android:layout_height="200dip"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true" />
 

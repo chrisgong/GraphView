@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer.GridStyle;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -76,6 +77,9 @@ public class Scaling extends Fragment {
 		});
 
 		graph.addSeries(mSeries);
+		
+
+		graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
 		// set manual X bounds
 		graph.getViewport().setYAxisBoundsManual(true);
 		graph.getViewport().setMinY(-200);
@@ -88,7 +92,7 @@ public class Scaling extends Fragment {
 		// enable scaling
 		graph.getViewport().setScalable(false); // 放大缩小
 		graph.getViewport().setScrollable(true); // 横向滑动
-		graph.getGridLabelRenderer().setGridStyle(GridStyle.HORIZONTAL); // 网格
+		graph.getGridLabelRenderer().setGridStyle(GridStyle.BOTH); // 网格
 																			// 垂直，水平、无
 		graph.getGridLabelRenderer().setHighlightZeroLines(false); // 中心线是否加粗
 		graph.getGridLabelRenderer().setVerticalLabelsVisible(true); // y轴 刻度
@@ -96,6 +100,7 @@ public class Scaling extends Fragment {
 		// graph.getGridLabelRenderer().setNumVerticalLabels(3); //X轴 条数
 		graph.getGridLabelRenderer().setTextSize(10);
 		graph.getGridLabelRenderer().setLabelsSpace(1);
+		graph.getGridLabelRenderer().setLabelsSpace(5);
 
 		rootView.findViewById(R.id.button1).setOnClickListener(
 				new OnClickListener() {

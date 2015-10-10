@@ -19,17 +19,17 @@
  */
 package com.jjoe64.graphview;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
 import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
-import android.util.Log;
 import android.util.TypedValue;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * The default renderer for the grid and the labels.
@@ -989,13 +989,17 @@ public class GridLabelRenderer {
 					label = "";
 				}
 				String[] lines = label.split("\n");
+
+				FontMetrics fm = mPaintLabel.getFontMetrics();
+
 				for (int li = 0; li < lines.length; li++) {
 					// for the last line y = height
-					float y = (canvas.getHeight() - mStyles.padding - getHorizontalAxisTitleHeight())
+					float y = (mGraphView.getGraphContentHeight()
+							+ mGraphView.getGraphContentTop() - mStyles.padding - getHorizontalAxisTitleHeight())
 							- (lines.length - li - 1)
 							* getTextSize()
 							* 1.1f
-							+ mStyles.labelsSpace;
+							+ fm.descent - fm.ascent + mStyles.labelsSpace;
 					canvas.drawText(lines[li], e.getKey(), y, mPaintLabel);
 				}
 			}
